@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans.xsd 
+       http://www.springframework.org/schema/security 
+       http://www.springframework.org/schema/security/spring-security.xsd ">
+
+    <security:http auto-config="true">
+        <security:intercept-url pattern="/admin1" access="ROLE_ADMIN" />
+        <security:intercept-url pattern="/productlist1" access="ROLE_USER" />
+        <security:form-login
+            login-page="/loginHeres"
+            default-target-url="/productlist1"
+            authentication-failure-url="/login?error"
+            username-parameter="username"
+            password-parameter="password"
+            authentication-success-handler-ref="mySuccessHandler" />
+        <security:logout
+            logout-success-url="/login?logout" />
+    </security:http>
+
+     <security:authentication-manager>
+        <security:authentication-provider>
+            <security:jdbc-user-service
+                    data-source-ref="dataSource"
+                    users-by-username-query="SELECT username, password, enabled FROM users WHERE username = ?" 
+                    authorities-by-username-query="Select us.username, ur.authority from users us, authorities ur
+where us.id = ur.id and us.username =?  " 
+/>
+        </security:authentication-provider>
+    </security:authentication-manager>
+<!-- <security:authentication-manager>
+		<security:authentication-provider>
+			<security:user-service>
+						<security:user name="niketkumar024@gmail.com" password="abc123" authorities="ROLE_ADMIN,ROLE_USER"></security:user>
+						<security:user name="xyz" password="123" authorities="ROLE_USER"></security:user>
+						
+			</security:user-service>
+		</security:authentication-provider>
+	</security:authentication-manager> -->
+    
+<bean id="mySuccessHandler" class="com.niit.shoppingcart.Util1.MySuccessHandler">
+    </bean>
+</beans>

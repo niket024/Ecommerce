@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<!-- Executed when webFlow is triggered -->
+
+
+
+	<on-start>
+
+		<evaluate result="flowScope.user" expression="registrationHandler.initFlow()" />
+
+	</on-start>
+
+
+	<action-state id="start">
+
+		<evaluate result="flowScope.user" expression="user" />
+
+		<transition to="start1" />
+
+	</action-state>
+
+
+
+	<view-state id="start1" model="flowScope.user" view="/memberDetails">
+
+		<transition to="validate" on="submit" />
+
+	</view-state>
+
+
+	<action-state id="validate">
+
+		<evaluate expression="registrationHandler.validateDetails(user,messageContext)" />
+
+		<transition to="confirmDetails" on="success" />
+
+		<transition to="start" on="failure" />
+
+	</action-state>
+
+
+	<view-state id="confirmDetails" model="user" view="/confirmDetails">
+
+		<transition to="start1" on="edit" />
+
+		<transition to="detailsstore" on="orderConfirmed" />
+
+	</view-state>
+
+
+	<action-state id="detailsstore">
+
+		<evaluate expression="userDAO.saveOrUpdate(user)" />
+
+		<transition to="home" />
+
+	</action-state>
+
+	<end-state id="home" view="/Login" />
+
+	<end-state id="toHome" view="externalRedirect:contextRelative:home.jsp" />
+
+	<end-state id="toException"
+		view="externalRedirect:contextRelative:exception.jsp" />
+
+	<!-- these events are available in every state -->
+
+
+
+	<global-transitions>
+
+		<transition to="toHome" on="home" />
+
+		<transition to="toException" on="error" />
+
+	</global-transitions>
+
+</flow>
